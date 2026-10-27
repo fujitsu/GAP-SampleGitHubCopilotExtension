@@ -1,0 +1,16 @@
+# 開発用ソース・ビルドスクリプト
+scripts/
+tsconfig.json
+
+# ドキュメント・元ファイル
+BUILD.md
+extension-landing.md
+
+# CI/CD・開発設定
+.github/
+.vscode/
+azure-pipelines.yml
+
+# その他不要な設定
+.gitignore
+*.map

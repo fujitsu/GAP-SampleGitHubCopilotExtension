@@ -1,0 +1,58 @@
+{
+  "name": "fujitsu-gap-copilot",
+  "displayName": "Fujitsu-GAP Copilot Custom Model",
+  "description": "Azure AD auth integration for GitHub Copilot Chat custom model",
+  "version": "1.0.0",
+  "publisher": "fujitsu",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI","Chat"
+  ],
+  "activationEvents": ["*"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "Fujitsu-GAP",
+        "displayName": "Fujitsu-GAP"
+      }
+    ],
+    "configuration": {
+      "title": "Fujitsu-GAP",
+      "properties": {
+        "fujitsuGap.tenantName": {
+          "type": "string",
+          "default": "",
+          "description": "Tenant Name"
+        },
+        "fujitsuGap.clientId": {
+          "type": "string",
+          "default": "",
+          "description": "Client ID"
+        },
+        "fujitsuGap.maxInputTokens": {
+          "type": "number",
+          "default": 262144,
+          "description": "Max Input Tokens (既定値: 256K)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "node scripts/prepare-readme.js",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^2.6.5",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.3.3",
+    "@vscode/vsce": "^2.22.0"
+  }
+}

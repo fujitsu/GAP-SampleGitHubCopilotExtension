@@ -1,4 +1,4 @@
-# Fujitsu-GAP Copilot Custom Model 拡張機能
+﻿# Fujitsu-GAP Copilot Custom Model 拡張機能
 
 この拡張機能は、GitHub Copilot Chat のカスタムモデルとして「Fujitsu Cloud Service Generative AI Platform (Fujitsu-GAP)」へ接続するための VS Code 拡張機能です。
 
