@@ -2,7 +2,7 @@
   "name": "fujitsu-gap-copilot",
   "displayName": "Fujitsu-GAP Copilot Custom Model",
   "description": "Azure AD auth integration for GitHub Copilot Chat custom model",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "fujitsu",
   "engines": {
     "vscode": "^1.90.0"

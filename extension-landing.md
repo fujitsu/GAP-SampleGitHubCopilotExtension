@@ -2,9 +2,6 @@
 日本語説明文は[後半](#japanese-description)にあります。
 
 ## English Description
-
-# Fujitsu-GAP Copilot Custom Model
-
 This extension integrates Azure AD authentication for the GitHub Copilot Chat custom model, allowing users to leverage the Fujitsu-GAP custom model within VS Code.
 
 ## Features

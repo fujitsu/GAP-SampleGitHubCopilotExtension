@@ -13,10 +13,9 @@ export class AuthManager {
         this.tenantName = tenantName;
         this.clientId = clientId;
 
-        // C#コードと一致させたB2C Authorityの構築 (/tfp/ を含む形式)
         const b2cDomain = `${this.tenantName}.b2clogin.com`;
-        const signInPolicy = "B2C_1_fjcloud_genai_susi";
-        const authority = `https://${b2cDomain}/tfp/${this.tenantName}.onmicrosoft.com/${signInPolicy}`;
+        const signInPolicy = 'B2C_1_fjcloud_genai_susi';
+        const authority = `https://${b2cDomain}/${this.tenantName}.onmicrosoft.com/${signInPolicy}`;
 
         const cachePlugin: msal.ICachePlugin = {
             beforeCacheAccess: async (cacheContext) => {
@@ -35,7 +34,7 @@ export class AuthManager {
         const clientConfig: msal.Configuration = {
             auth: {
                 clientId: this.clientId,
-                authority: authority,
+                authority,
                 knownAuthorities: [b2cDomain]
             },
             cache: {
@@ -44,6 +43,21 @@ export class AuthManager {
         };
 
         this.clientApp = new msal.PublicClientApplication(clientConfig);
+    }
+
+    /**
+     * 初回起動時のみ msal_token_cache をクリアする初期化メソッド
+     */
+    async initialize(): Promise<void> {
+        const isInitialized = this.context.globalState.get<boolean>('msal_cache_initialized', false);
+        
+        if (!isInitialized) {
+            // 初回起動時のみSecretStorageからキャッシュを削除
+            await this.context.secrets.delete('msal_token_cache');
+            // フラグを更新して、次回以降はクリアされないようにする
+            await this.context.globalState.update('msal_cache_initialized', true);
+            console.log("Initial run detected: msal_token_cache has been cleared.");
+        }
     }
 
     async getIdToken(): Promise<string> {
