@@ -1,0 +1,30 @@
+﻿trigger:
+- main
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  extensionVersion: '1.0.0'
+
+steps:
+- task: UseNode@1
+  inputs:
+    version: '20.x'
+  displayName: 'Install Node.js'
+
+- powershell: |
+    npm install
+    npm run compile
+    npx vsce package
+  displayName: 'Build VSIX Package'
+
+- task: PublishBuildArtifacts@1
+  condition: succeeded()
+  inputs:
+    PathtoPublish: 'fujitsu-gap-copilot-$(extensionVersion).vsix'
+    ArtifactName: 'fujitsu-gap-extension'
+    publishLocation: 'Container'
+  displayName: 'Publish VSIX Artifact'
