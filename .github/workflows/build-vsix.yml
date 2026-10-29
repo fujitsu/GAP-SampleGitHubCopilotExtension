@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*' # v1.0.0 などのタグがプッシュされた時に起動
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -16,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '26.x'
 
       - name: Install dependencies
         run: npm install
@@ -43,3 +46,22 @@ jobs:
         with:
           name: fujitsu-gap-extension
           path: "*.vsix"
+
+      # ZIP 作成（タグ名を使用）          
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path *.vsix `
+            -DestinationPath fujitsu-gap-copilot-${{ github.ref_name }}.zip
+
+      # Release を作成または更新し、ZIP を添付
+      - name: Create or Update Release and Upload ZIP
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          overwrite_files: true
+          files: fujitsu-gap-copilot-${{ github.ref_name }}.zip
