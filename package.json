@@ -2,7 +2,7 @@
   "name": "fujitsu-gap-copilot",
   "displayName": "Fujitsu-GAP Copilot Custom Model",
   "description": "Azure AD auth integration for GitHub Copilot Chat custom model",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "fujitsu",
   "engines": {
     "vscode": "^1.145.3"
@@ -36,6 +36,11 @@
           "type": "number",
           "default": 262144,
           "description": "Max Input Tokens (既定値: 256K)"
+        },
+        "fujitsuGap.verboseLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable MSAL verbose and OpenID metadata HTTP diagnostic logging in the Developer Tools console (no reload required). Response bodies and authentication headers are not logged by the HTTP diagnostics. PII logging is disabled. Turn off after troubleshooting."
         }
       }
     }

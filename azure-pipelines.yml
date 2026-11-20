@@ -7,7 +7,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  extensionVersion: '1.0.3'
+  extensionVersion: '1.0.4'
 
 steps:
 - task: UseNode@1

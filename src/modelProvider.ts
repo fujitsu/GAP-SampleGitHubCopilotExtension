@@ -143,7 +143,7 @@ export class CustomModelProvider implements vscode.LanguageModelChatProvider {
         let toolCalls: any[] = [];
 
         try {
-            // 常に AuthManager からトークンを取得（内部でサイレント更新が行われる）
+            // AuthManager 内で有効期限まで ID トークンを再利用
             const idToken = await this.authManager.getIdToken();
             const response = await makeRequest(idToken);
             const choice = response.data.choices?.[0];
