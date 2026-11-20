@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     const provider = new CustomModelProvider(context, tenantName, clientId || '', maxInputTokens);
 
     context.subscriptions.push(
-        vscode.lm.registerLanguageModelChatProvider(provider.id, provider as any)
+        vscode.lm.registerLanguageModelChatProvider(CustomModelProvider.id, provider as any)
     );
 
     console.log('Fujitsu Cloud Service Generative AI Platform Provider is active!');

@@ -3,15 +3,15 @@ import axios from 'axios';
 import { AuthManager } from './authManager';
 
 export class CustomModelProvider implements vscode.LanguageModelChatProvider {
-    readonly name = 'Fujitsu Cloud Service Generative AI Platform Custom Model';
-    readonly id = 'Fujitsu-GAP';
-    readonly version = '1.0.0';
-    readonly family = 'fujitsu-gap';
+    static readonly name = 'Fujitsu Cloud Service Generative AI Platform Custom Model';
+    static readonly id = 'Fujitsu-GAP';
+    static readonly version = '1.0.0';
+    static readonly family = 'fujitsu-gap';
+
     readonly maxInputTokens: number;
 
     private authManager: AuthManager;
     private tenantName: string;
-    private cachedToken: string | null = null;
 
     constructor(context: vscode.ExtensionContext, tenantName: string, clientId: string, maxInputTokens: number) {
         this.tenantName = tenantName;
@@ -22,10 +22,10 @@ export class CustomModelProvider implements vscode.LanguageModelChatProvider {
     // 1. モデル情報の提供
     async provideLanguageModelChatInformation(options: any, token: vscode.CancellationToken): Promise<any[]> {
         return [{
-            id: this.id,
-            name: this.name,
-            version: this.version,
-            family: this.family,
+            id: CustomModelProvider.id,
+            name: CustomModelProvider.name,
+            version: CustomModelProvider.version,
+            family: CustomModelProvider.family,
             maxInputTokens: this.maxInputTokens,
             maxOutputTokens: 32000,
             capabilities: {
@@ -143,28 +143,12 @@ export class CustomModelProvider implements vscode.LanguageModelChatProvider {
         let toolCalls: any[] = [];
 
         try {
-            if (!this.cachedToken) {
-                this.cachedToken = await this.authManager.getIdToken();
-            }
-
-            try {
-                const response = await makeRequest(this.cachedToken);
-                const choice = response.data.choices?.[0];
-                responseText = choice?.message?.content || '';
-                toolCalls = choice?.message?.tool_calls || [];
-            } catch (error: any) {
-                if (error.response?.status === 401) {
-                    console.log("Token expired, refreshing token...");
-                    this.cachedToken = await this.authManager.getIdToken();
-                    const retryResponse = await makeRequest(this.cachedToken);
-                    const choice = retryResponse.data.choices?.[0];
-                    responseText = choice?.message?.content || '';
-                    toolCalls = choice?.message?.tool_calls || [];
-                } else {
-                    throw error;
-                }
-            }
-
+            // AuthManager 内で有効期限まで ID トークンを再利用
+            const idToken = await this.authManager.getIdToken();
+            const response = await makeRequest(idToken);
+            const choice = response.data.choices?.[0];
+            responseText = choice?.message?.content || '';
+            toolCalls = choice?.message?.tool_calls || [];
         } catch (error: any) {
             throw new Error(`API request failed: ${error.response?.data ? JSON.stringify(error.response.data) : error.message}`);
         }

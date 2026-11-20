@@ -1,5 +1,6 @@
 # 開発用ソース・ビルドスクリプト
 scripts/
+tests/
 tsconfig.json
 
 # ドキュメント・元ファイル
