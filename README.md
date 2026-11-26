@@ -87,6 +87,8 @@ graph TD
 3. **認証の実行（ブラウザ認証）**
 
 * 初回利用時、またはトークン期限切れ時に、自動的にブラウザが起動します。
+* 取得した ID トークンは、有効期限までメモリ内で再利用します。リフレッシュトークンによるサイレント更新は行いません。
+* VS Code の再起動やウィンドウの再読み込み後は、再度ブラウザ認証が必要です。
 * ブラウザのサインイン画面で、ご自身の **ID とパスワード** を入力して認証を行ってください。
 * 認証が完了したらブラウザのタブを閉じ、VS Code に戻ります。
 
@@ -107,3 +109,15 @@ graph TD
 * VS Code のメニューから **「表示」 > 「出力」 (View > Output)** を選択します。
 * 上部のドロップダウンメニューから **「Fujitsu-GAP」**（または本拡張機能に関連する出力チャネル）を選択します。
 * 認証トークンの取得成功ログや、Fujitsu-GAP API へのリクエスト・レスポンス（ステータスコード 200 OK など）が正しく出力されていることを確認できます。
+
+### 認証の詳細診断ログ
+
+OpenID 構成の取得が HTTP 403 で拒否された場合は、Verbose Logging が OFF でも VS Code にエラー通知します。Menlo の応答ヘッダーに拒否が明示されている場合のみ Menlo Security と表示し、それ以外は一般的なアクセス拒否として通知します。通知が表示された場合は、Windowsのプロキシ設定を確認し、VS Codeを再起動してください。
+
+ON の間は `Fujitsu-GAP MSAL HTTP` の接頭辞で、OpenID 構成取得の HTTP ステータス、Content-Type、応答の型、必須項目の有無、形式を制限したエラーコードも記録します。HTTP 診断では URL、応答本文全体、Cookie、認証ヘッダー、トークンは記録しません。通信経路や再試行の動作は変更しません。
+
+`menloHeaders.dispositionPresent` と `menloHeaders.policyActionPresent` は、それぞれ `x-menlo-disposition` と `x-menlo-policy-action` の有無です。`menloBlocked` は HTTP 403 かつ既存の拒否条件に一致した場合のみ `true` です。ヘッダー値は記録せず、`false` でも Menlo を経由していないことや拒否元が Menlo ではないことを意味しません。
+
+設定画面の **Fujitsu-GAP: Verbose Logging**（`fujitsuGap.verboseLogging`）を ON にすると、MSAL の詳細診断ログを出力します。既定は OFF で、変更はウィンドウの再読み込みなしで反映されます。
+
+**Developer: Toggle Developer Tools** の Console で `Fujitsu-GAP MSAL` を検索してください。個人情報を含むと MSAL が判定したログは出力しません。ただし、接続先などの環境情報が含まれるため、共有前に内容を確認し、診断後は OFF に戻してください。
