@@ -6,15 +6,16 @@ export function activate(context: vscode.ExtensionContext) {
     const tenantName = config.get<string>('tenantName') || '';
     const clientId = config.get<string>('clientId');
     const maxInputTokens = config.get<number>('maxInputTokens') ?? (256 * 1024);
+    const enableStreaming = config.get<boolean>('enableStreaming') ?? false;
 
     if (!clientId) {
         vscode.window.showWarningMessage('Fujitsu GAP: 設定画面 から「Tenant Name」と「Client ID」を入力してください。');
     }
 
-    const provider = new CustomModelProvider(context, tenantName, clientId || '', maxInputTokens);
+    const provider = new CustomModelProvider(context, tenantName, clientId || '', maxInputTokens, enableStreaming);
 
     context.subscriptions.push(
-        vscode.lm.registerLanguageModelChatProvider(provider.id, provider as any)
+        vscode.lm.registerLanguageModelChatProvider(CustomModelProvider.id, provider as any)
     );
 
     console.log('Fujitsu Cloud Service Generative AI Platform Provider is active!');
