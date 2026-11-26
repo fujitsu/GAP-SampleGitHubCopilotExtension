@@ -5,17 +5,19 @@ import { AuthManager } from './authManager';
 export class CustomModelProvider implements vscode.LanguageModelChatProvider {
     static readonly name = 'Fujitsu Cloud Service Generative AI Platform Custom Model';
     static readonly id = 'Fujitsu-GAP';
-    static readonly version = '1.0.0';
+    static readonly version = '1.1.0';
     static readonly family = 'fujitsu-gap';
 
     readonly maxInputTokens: number;
 
     private authManager: AuthManager;
     private tenantName: string;
+    private enableStreaming: boolean;
 
-    constructor(context: vscode.ExtensionContext, tenantName: string, clientId: string, maxInputTokens: number) {
+    constructor(context: vscode.ExtensionContext, tenantName: string, clientId: string, maxInputTokens: number, enableStreaming: boolean) {
         this.tenantName = tenantName;
         this.maxInputTokens = maxInputTokens;
+        this.enableStreaming = enableStreaming;
         this.authManager = new AuthManager(context, this.tenantName, clientId);
     }
 
@@ -108,7 +110,7 @@ export class CustomModelProvider implements vscode.LanguageModelChatProvider {
         const requestBody: any = {
             model: modelName,
             messages: formattedMessages,
-            stream: false
+            stream: this.enableStreaming
         };
 
         // Tool Use (tools) の定義をリクエストに追加

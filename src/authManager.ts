@@ -163,8 +163,21 @@ export class AuthManager {
      * 未取得または期限切れの場合のみブラウザ認証を実行します。
      */
     async getIdToken(): Promise<string> {
-        if (this.idToken && Date.now() < this.idToken.expiresAt) {
-            return this.idToken.value;
+        if (this.idToken) {
+            if (Date.now() < this.idToken.expiresAt) {
+                if (vscode.workspace.getConfiguration('fujitsuGap').get<boolean>('verboseLogging', false)) {
+                    console.log(`[GAP AuthManager] Reusing cached ID token. Expires at: ${new Date(this.idToken.expiresAt).toISOString()}`);
+                }
+                return this.idToken.value;
+            } else {
+                if (vscode.workspace.getConfiguration('fujitsuGap').get<boolean>('verboseLogging', false)) {
+                    console.log(`[GAP AuthManager] Cached ID token expired at ${new Date(this.idToken.expiresAt).toISOString()}. Starting re-authentication...`);
+                }
+            }
+        } else {
+            if (vscode.workspace.getConfiguration('fujitsuGap').get<boolean>('verboseLogging', false)) {
+                console.log("[GAP AuthManager] No ID token found in memory. Starting initial authentication...");
+            }
         }
         this.idToken = undefined;
         if (!this.tokenRequest) {
@@ -199,12 +212,15 @@ export class AuthManager {
                     throw new Error("Authentication returned an ID token with a missing, invalid, or expired expiry.");
                 }
                 this.idToken = { value: response.idToken, expiresAt: expiresAt * 1000 };
-                console.log("AuthManager: Successfully acquired token interactively.");
+                if (vscode.workspace.getConfiguration('fujitsuGap').get<boolean>('verboseLogging', false)) {
+                    console.log(`[GAP AuthManager] Successfully acquired token interactively. Expires at: ${new Date(this.idToken.expiresAt).toISOString()}`);
+                }
+                console.log("[GAP AuthManager] Successfully acquired token interactively.");
                 return response.idToken;
             }
             throw new Error("Could not acquire ID token.");
         } catch (error) {
-            console.error("AuthManager: Interactive authentication failed:", error);
+            console.error("[GAP AuthManager] Interactive authentication failed:", error);
             this.throwIfMenloBlocked(error);
             throw new Error(`Interactive authentication failed: ${error}`);
         }
